@@ -1,0 +1,258 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>hexo部署教程（1） | LinuxWin🍉</title><noscript>开启JavaScript才能访问本站哦~</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=1.12.2"><!-- inject head--><link rel="canonical" href="https://linuxwin232.github.io/2024/06/20/2024-06-20-install%20hexo/"><link rel="stylesheet" href="https://cdn2.codesign.qq.com/icons/7pOrz0WXB5ZWJPX/latest/iconfont.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="Hi, this is hexo."><!-- pwa--><meta name="apple-mobile-web-app-capable" content="LinuxWin🍉"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(
+    "%c Program: Hexo %c Theme: Solitude %c Version: v1.12.2",
+    "border-radius:5px 0 0 5px;padding: 5px 10px;color:white;background:#ff3842;",
+    "padding: 5px 10px;color:white;background:#3e9f50;",
+    "padding: 5px 10px;color:white;background:#0084ff;border-radius:0 5px 5px 0",
+)
+</script><script>(()=>{
+        const saveToLocal = {
+            set: function setWithExpiry(key, value, ttl) {
+                if (ttl === 0)
+                    return
+                const now = new Date()
+                const expiryDay = ttl * 86400000
+                const item = {
+                    value: value,
+                    expiry: now.getTime() + expiryDay
+                }
+                localStorage.setItem(key, JSON.stringify(item))
+            },
+            get: function getWithExpiry(key) {
+                const itemStr = localStorage.getItem(key)
+    
+                if (!itemStr) {
+                    return undefined
+                }
+                const item = JSON.parse(itemStr)
+                const now = new Date()
+    
+                if (now.getTime() > item.expiry) {
+                    localStorage.removeItem(key)
+                    return undefined
+                }
+                return item.value
+            }
+        };
+        window.utils = {
+            saveToLocal: saveToLocal,
+            getCSS: (url, id = false) => new Promise((resolve, reject) => {
+              const link = document.createElement('link')
+              link.rel = 'stylesheet'
+              link.href = url
+              if (id) link.id = id
+              link.onerror = reject
+              link.onload = link.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                link.onload = link.onreadystatechange = null
+                resolve()
+              }
+              document.head.appendChild(link)
+            }),
+            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+              const script = document.createElement('script')
+              script.src = url
+              script.async = true
+              script.onerror = reject
+              script.onload = script.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                script.onload = script.onreadystatechange = null
+                resolve()
+              }
+    
+              Object.keys(attr).forEach(key => {
+                script.setAttribute(key, attr[key])
+              })
+    
+              document.head.appendChild(script)
+            }),
+            addGlobalFn: (key, fn, name = false, parent = window) => {
+                const globalFn = parent.globalFn || {}
+                const keyObj = globalFn[key] || {}
+        
+                if (name && keyObj[name]) return
+        
+                name = name || Object.keys(keyObj).length
+                keyObj[name] = fn
+                globalFn[key] = keyObj
+                parent.globalFn = globalFn
+            },
+        }
+    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
+    root: '/',
+    algolia: undefined,
+    localsearch: undefined,
+    runtime: '2023-04-20 00:00:00',
+    lazyload: {
+        enable: false,
+        error: '/img/error_load.avif'
+    },
+    copyright: {"limit":50,"author":"作者: LinuxWin232","link":"链接: ","source":"来源: LinuxWin🍉","info":"著作权归作者所有。 商业转载请联系作者获得授权，非商业转载请注明出处。"},
+    highlight: {
+        enable: true,
+        limit: 200,
+        expand: true,
+        copy: true,
+        syntax: 'highlight.js'
+    },
+    randomlink: false,
+    lang: {"theme":{"dark":"已切换至深色模式","light":"已切换至浅色模式"},"copy":{"success":"复制成功","error":"复制失败"},"backtop":"返回顶部","time":{"day":"天前","hour":"小时前","just":"刚刚","min":"分钟前","month":"个月前"},"day":" 天","f12":"开发者模式已打开，请遵循GPL协议。","totalk":"无需删除空行，直接输入评论即可"},
+    aside: {
+        sayhello: {
+            morning: '一日之计在于晨',
+            noon: '吃饱了才有力气干活',
+            afternoon: '集中精力，攻克难关',
+            night: '不要太劳累了，早睡更健康',
+            goodnight: '睡个好觉，保证精力充沛',
+        },
+        sayhello2: [],
+        sayhello3: {
+            prefix: '好久不见，',
+            back: '欢迎再次回来，',
+        },
+    },
+    covercolor: {
+        enable: false
+    },
+    comment: false,
+    lightbox: 'null',
+    post_ai: false,
+    right_menu: false,
+};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
+    is_post: true,
+    is_page: false,
+    is_home: false,
+    page: '',
+    toc: true,
+    comment: false,
+    ai_text: false
+}</script><meta name="generator" content="Hexo 7.2.0"></head><body id="body"><!-- universe--><canvas id="universe"></canvas><!-- loading--><!-- console--><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude st-close-fill"></i></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="昼夜切换"><i class="solitude st-moon-clear-fill"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="边栏显示控制"><i class="solitude st-side-bar-fill"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a></div></div></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude st-moon-clear-fill"></i><span>显示模式</span></span></div><span class="sidebar-menu-item-title">标签</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/WinPE/">WinPE<sup>1</sup></a><a href="/tags/Windows/">Windows<sup>4</sup></a><a href="/tags/Ubuntu/">Ubuntu<sup>1</sup></a><a href="/tags/Linux/">Linux<sup>1</sup></a><a href="/tags/%E4%B8%80%E4%BA%9B%E9%97%B2%E8%B0%88/">一些闲谈<sup>1</sup></a><a href="/tags/WinToGo/">WinToGo<sup>1</sup></a><a href="/tags/Git/">Git<sup>1</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="返回博客主页"><span class="title">Solitude</span></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">hexo部署教程（1）</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude st-arrow-up-line"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude st-menu-line"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/img/default.avif" alt="hexo部署教程（1）"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="该文章为原创文章，注意版权协议">原创</a><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Git/"><span class="tags-name tags-punctuation">Git</span></a><a class="post-meta__tags" href="/tags/Hexo/"><span class="tags-name tags-punctuation">Hexo</span></a></div></div></div></div><h1 class="post-title">hexo部署教程（1）</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>前文</p>
+<p>大部分内容来自Fomalhaut大佬的文章:<a target="_blank" rel="noopener" href="https://www.fomal.cc/posts/e593433d.html">Hexo博客搭建基础教程(一)</a></p>
+<p>所以本文请放心食用😋😋😋</p>
+</blockquote>
+<h1 id="前提提要"><a href="#前提提要" class="headerlink" title="前提提要"></a>前提提要</h1><p>本文如果部署hexo失败，请前往上面的教程（</p>
+<h1 id="准备需要的玩意儿"><a href="#准备需要的玩意儿" class="headerlink" title="准备需要的玩意儿"></a>准备需要的玩意儿</h1><p>• 至少Windows10的系统</p>
+<p>• Git</p>
+<p>• Node.js</p>
+<p>• VSCode</p>
+<p>• 一个github账号（废话，没它你怎么部署你自己的博客）</p>
+<p>• 一个电子邮箱</p>
+<h1 id="安装Git-Node-js"><a href="#安装Git-Node-js" class="headerlink" title="安装Git&#x2F;Node.js"></a>安装Git&#x2F;Node.js</h1><p>由于这两的官网下载比较慢，所以我把123盘的下载链接贴出来（</p>
+<p><a target="_blank" rel="noopener" href="https://www.123pan.com/s/iQ9Ijv-WbaU3.html">https://www.123pan.com/s/iQ9Ijv-WbaU3.html</a></p>
+<p>下载完安装包后打开一路确认完了（）</p>
+<p>安装完后，按下键盘的win+r键，输入cmd，回车，输入<code>node -v</code>，回车。</p>
+<p>如果看见版本信息，则说明安装成功。</p>
+<h2 id="更换npm源"><a href="#更换npm源" class="headerlink" title="更换npm源"></a>更换npm源</h2><p>这里以华为云的npm源为例，在git bash中输入：</p>
+<p><code>npm config set registry https://mirrors.huaweicloud.com/repository/npm/</code></p>
+<p>回车，等待一会，源就换好了。</p>
+<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>同样打开git bash，输入以下命令安装。</p>
+<p><code>npm install -g hexo-cli</code></p>
+<p>安装完后输入hexo -v验证是否安装成功。</p>
+<h1 id="注册GitHub并创建仓库"><a href="#注册GitHub并创建仓库" class="headerlink" title="注册GitHub并创建仓库"></a>注册GitHub并创建仓库</h1><p>进入官网 <a target="_blank" rel="noopener" href="https://github.com/%EF%BC%88%E9%83%A8%E5%88%86%E5%9C%B0%E5%8C%BA%E5%8F%AF%E8%83%BD%E4%BC%9A%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%EF%BC%8C%E6%89%80%E4%BB%A5%E4%BD%A0%E5%BE%97%E6%9C%89%E4%B8%80%E4%B8%AA%E5%93%88%E5%88%A9%E6%B3%A2%E7%89%B9%E7%8E%AF%E5%A2%83%EF%BC%89">https://github.com/（部分地区可能会无法访问，所以你得有一个哈利波特环境）</a></p>
+<p>点击右上角的Sign up</p>
+<p>输入你的邮箱，用户名，密码，然后完成人机和邮箱验证即可。</p>
+<p>注册完后，点击右上角的+，选择New repository，创建一个&lt;用户名&gt;.github.io的repository。</p>
+<p>• 仓库的格式必须为：&lt;用户名&gt;.github.io (注意：前缀必须为用户名，不要等后面404了再来为什么！！！)</p>
+<p>• Description：为描述仓库（选填）</p>
+<p>• 勾选 Initialize this repository with a README 初始化一个 README.md 文件</p>
+<p>• 点击 Creat repository 进行创建</p>
+<h2 id="生成ssh公钥并连接到GitHub"><a href="#生成ssh公钥并连接到GitHub" class="headerlink" title="生成ssh公钥并连接到GitHub"></a>生成ssh公钥并连接到GitHub</h2><p>1.配置用户名和邮箱</p>
+<p>依旧是打开git bash，输入以下命令。</p>
+<p><code>git config --global user.name &quot;你的GitHub用户名&quot;</code></p>
+<p>回车，然后输入这行命令：</p>
+<p><code>git config --global user.email &quot;你注册GitHub时用的邮箱&quot;</code></p>
+<p>再次回车，输入以下命令来生成ssh公钥：</p>
+<p><code>ssh-keygen -t rsa -C &quot;你的邮箱&quot;</code></p>
+<p>连续按三次回车，之后打开C盘下用户文件夹下的.ssh的文件夹，会看到 id_rsa.pub这个文件</p>
+<p>用VS Code打开id_rsa.pub，之后复制里面的内容即可。</p>
+<p>2.将 SSH KEY 配置到 GitHub</p>
+<p>打开github官网，点击头像，接着点击settings-SSH and GPG keys,点击New SSH key，名字随便起，公钥填到Key那一栏。</p>
+<p>3.测试连接到GitHub</p>
+<p>打开Git BASH，输入这行命令：</p>
+<p><code>ssh -T git@github.com</code></p>
+<p>等待一会后，如果看到你的GitHub名，说明已经大功告成，至此完成了环境准备工作。</p>
+<h1 id="初始化-Hexo-项目"><a href="#初始化-Hexo-项目" class="headerlink" title="初始化 Hexo 项目"></a>初始化 Hexo 项目</h1><p>1.在目标路径（我这里选的路径为【D:&#x2F;Blog】）执行<code>hexo init</code>初始化项目。</p>
+<p>在目标文件夹，鼠标右键，选择Open git bash here，输入以下命令：</p>
+<p><code>hexo init</code></p>
+<p>然后安装相关依赖：</p>
+<p><code>npm i</code></p>
+<p>初始化后，博客文件夹有以下变化：</p>
+<p>【node_modules】：依赖包</p>
+<p>【scaffolds】：生成文章的一些模板</p>
+<p>【source】：用来存放你的文章</p>
+<p>【themes】：主题</p>
+<p>【.npmignore】：发布时忽略的文件（可忽略）</p>
+<p>【_config.landscape.yml】：主题的配置文件</p>
+<p>【config.yml】：博客的配置文件</p>
+<p>【package.json】：项目名称、描述、版本、运行和开发等信息</p>
+<p>输入hexo server&#x2F;hexo s启动项目。</p>
+<p>打开浏览器，输入地址：<a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000/</a> ，看到下面的效果，说明你的博客已经构建成功了。</p>
+<p><img src="https://bu.dusays.com/2022/05/26/628e5423df640.webp"></p>
+<h1 id="将博客挂载到-GitHub-Pages"><a href="#将博客挂载到-GitHub-Pages" class="headerlink" title="将博客挂载到 GitHub Pages"></a>将博客挂载到 GitHub Pages</h1><p>1.安装 hexo-deployer-git</p>
+<p><code>npm install hexo-deployer-git --save</code></p>
+<p>2.修改 _config.yml 文件</p>
+<p>用VS Code打开_config.yml，这是整个Hexo框架的配置文件。可以在里面修改大部分的配置。</p>
+<p>修改最后一行的配置，将username修改为你自己的GitHub名字即可。</p>
+<p>deploy:</p>
+<p>  type: git</p>
+<p>  repository: <a href="mailto:&#103;&#105;&#x74;&#64;&#103;&#x69;&#116;&#x68;&#117;&#x62;&#46;&#99;&#111;&#x6d;">&#103;&#105;&#x74;&#64;&#103;&#x69;&#116;&#x68;&#117;&#x62;&#46;&#99;&#111;&#x6d;</a>:username&#x2F;username.github.io.git</p>
+<p>  branch: main</p>
+<p>3.修改好配置后，运行如下命令，将代码部署到 GitHub</p>
+<p><code>hexo clean &amp;&amp; hexo generate &amp;&amp; hexo deploy  // Git BASH终端</code></p>
+<blockquote>
+<p>注意：deploy时可能要你输入 username 和 password。</p>
+</blockquote>
+<p>如果出现Deploy done，则说明部署成功了。</p>
+<p>稍等两分钟，打开浏览器访问：<a target="_blank" rel="noopener" href="https://username.github.io/">https://username.github.io</a> ，这时候我们就可以看到博客内容了。​(把username改为你自己的GitHub名字）</p>
+<p>剑阁峥嵘而崔嵬，一夫当关，万夫莫开 -《蜀道难》</p>
+</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">LinuxWin🍉</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本文是原创文章，采用<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>协议，完整转载请注明来自<a href="/">LinuxWin🍉</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Git/"><span class="tags-punctuation"></span>Git<span class="tagsPageCount">1</span></a><a class="post-meta__tags" href="/tags/Hexo/"><span class="tags-punctuation"></span>Hexo<span class="tagsPageCount">1</span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/06/11/2024-06-11-The%20wisdom%20of%20programming/"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">编程的智慧</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="头像" src="/img/avatar.avif"><div class="avatar-sticker"><img class="avatar-sticker-img" src="https://7.isyangs.cn/34/65f2e4e0423cc-34.png" alt="心情贴纸"></div></div><div class="author-info__description_group"><div class="author-info__description">分享自己对编程的<b>热爱</b>，对美好生活的<b>向往</b>，对知识海洋<b>探索历程</b>。</div><div class="author-info__description2">相信你可以在这里找到对你有用的知识和教程。</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">LinuxWin232</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="solitude st-menu-line"></i><span>文章目录</span></div><div class="toc-content" id="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E6%8F%90%E6%8F%90%E8%A6%81"><span class="toc-text">前提提要</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E9%9C%80%E8%A6%81%E7%9A%84%E7%8E%A9%E6%84%8F%E5%84%BF"><span class="toc-text">准备需要的玩意儿</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Git-Node-js"><span class="toc-text">安装Git&#x2F;Node.js</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%8D%A2npm%E6%BA%90"><span class="toc-text">更换npm源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Hexo"><span class="toc-text">安装Hexo</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B3%A8%E5%86%8CGitHub%E5%B9%B6%E5%88%9B%E5%BB%BA%E4%BB%93%E5%BA%93"><span class="toc-text">注册GitHub并创建仓库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E6%88%90ssh%E5%85%AC%E9%92%A5%E5%B9%B6%E8%BF%9E%E6%8E%A5%E5%88%B0GitHub"><span class="toc-text">生成ssh公钥并连接到GitHub</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96-Hexo-%E9%A1%B9%E7%9B%AE"><span class="toc-text">初始化 Hexo 项目</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%86%E5%8D%9A%E5%AE%A2%E6%8C%82%E8%BD%BD%E5%88%B0-GitHub-Pages"><span class="toc-text">将博客挂载到 GitHub Pages</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude st-map-line"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/06/20/2024-06-20-install%20hexo/" title="hexo部署教程（1）"><img alt="hexo部署教程（1）" src="/img/default.avif"></a><div class="content"><a class="title" href="/2024/06/20/2024-06-20-install%20hexo/" title="hexo部署教程（1）">hexo部署教程（1）</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/11/2024-06-11-The%20wisdom%20of%20programming/" title="编程的智慧"><img alt="编程的智慧" src="/img/default.avif"></a><div class="content"><a class="title" href="/2024/06/11/2024-06-11-The%20wisdom%20of%20programming/" title="编程的智慧">编程的智慧</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/09/2024-06-09-upgrade%20Windows/" title="从0教你升级Windows10"><img alt="从0教你升级Windows10" src="/img/default.avif"></a><div class="content"><a class="title" href="/2024/06/09/2024-06-09-upgrade%20Windows/" title="从0教你升级Windows10">从0教你升级Windows10</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/09/2024-06-11-upgrade%20win11/" title="保姆级教你升级Windows11"><img alt="保姆级教你升级Windows11" src="/img/default.avif"></a><div class="content"><a class="title" href="/2024/06/09/2024-06-11-upgrade%20win11/" title="保姆级教你升级Windows11">保姆级教你升级Windows11</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/08/2024-06-08-SlmplePE/" title="SimplePE"><img alt="SimplePE" src="/img/default.avif"></a><div class="content"><a class="title" href="/2024/06/08/2024-06-08-SlmplePE/" title="SimplePE">SimplePE</a></div></div></div></div></div></div></main><footer id="footer"><div id="st-footer-bar"><div class="footer-logo"><span>Solitude</span></div><div class="footer-bar-description">来自 Efu 的文章</div><a class="footer-bar-link" href="/about/">了解更多</a></div><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2024 By&nbsp;<a class="footer-bar-link" href="/">LinuxWin232</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="主题">主题</a><a class="footer-bar-link cc" href="/null" aria-label="copyright"><i class="solitude st-copyright-line"></i><i class="solitude st-creative-commons-by-line"></i><i class="solitude st-creative-commons-nc-line"></i><i class="solitude st-creative-commons-nd-line"></i></a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=1.12.2"></script><script src="/js/main.js?v=1.12.2"></script><script src="/js/third_party/waterfall.min.js?v=1.12.2"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="/js/third_party/universe.min.js?v=1.12.2"></script><script>dark()
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+})
+
+document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+})
+
+document.addEventListener('pjax:complete', () => {
+    window.refreshFn()
+
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+        const newScript = document.createElement('script')
+        const content = item.text || item.textContent || item.innerHTML || ""
+        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+        newScript.appendChild(document.createTextNode(content))
+        item.parentNode.replaceChild(newScript, item)
+    })
+
+    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+})
+
+document.addEventListener('pjax:error', (e) => {
+    if (e.request.status === 404) {
+        pjax.loadUrl('/404.html')
+    }
+})</script><!-- theme--><script>initTheme = () => {
+    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const cachedMode = utils.saveToLocal.get('theme');
+    if (cachedMode === undefined) {
+        const nowMode =
+            isDarkMode ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', nowMode);
+    } else {
+        document.documentElement.setAttribute('data-theme', cachedMode);
+    }
+    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
+}
+initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/06/20/2024-06-20-install hexo/","2024/06/11/2024-06-11-The wisdom of programming/","2024/06/09/2024-06-09-upgrade Windows/","2024/06/09/2024-06-11-upgrade win11/","2024/06/08/2024-06-08-SlmplePE/","2024/06/08/2024-06-08-install ubuntu/","2024/06/08/2024-06-15-install wtg/"];function toRandomPost(){ pjax.loadUrl('/'+posts[Math.floor(Math.random()*posts.length)]); }</script>

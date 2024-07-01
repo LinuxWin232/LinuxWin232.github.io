@@ -1,278 +1,208 @@
-const btf = {
-  debounce: function (func, wait, immediate) {
-    let timeout
-    return function () {
-      const context = this
-      const args = arguments
-      const later = function () {
-        timeout = null
-        if (!immediate) func.apply(context, args)
-      }
-      const callNow = immediate && !timeout
-      clearTimeout(timeout)
-      timeout = setTimeout(later, wait)
-      if (callNow) func.apply(context, args)
+(() => {
+    const utilsFn = {
+        throttle: (func, wait, {leading = true, trailing = true} = {}) => {
+            let timeout, previous = 0;
+            const later = (context, args) => {
+                timeout = previous = leading === false ? 0 : Date.now();
+                func.apply(context, args);
+            };
+            return function () {
+                const now = Date.now();
+                if (!previous && leading === false) previous = now;
+                const remaining = wait - (now - previous);
+                if (remaining <= 0 || remaining > wait) {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+                    later(this, arguments);
+                } else if (!timeout && trailing !== false) {
+                    timeout = setTimeout(() => later(this, arguments), remaining);
+                }
+            };
+        },
+        fadeIn: (ele, time) => ele.style.cssText = `display:block;animation: to_show ${time}s`,
+        fadeOut: (ele, time) => {
+            const resetStyles = () => {
+                ele.style.cssText = "display: none; animation: '' ";
+                ele.removeEventListener('animationend', resetStyles);
+            };
+            ele.addEventListener('animationend', resetStyles);
+            ele.style.animation = `to_hide ${time}s`;
+        },
+        sidebarPaddingR: () => {
+            const paddingRight = window.innerWidth - document.body.clientWidth;
+            if (paddingRight > 0) {
+                document.body.style.paddingRight = `${paddingRight}px`;
+            }
+        },
+        snackbarShow: (text, showAction = false, duration = 5000) => {
+            document.styleSheets[0].addRule(':root', `--efu-snackbar-time:${duration}ms!important`);
+            Snackbar.show({
+                text,
+                showAction,
+                duration,
+                pos: 'top-center'
+            });
+        },
+        copy: async (text) => {
+            const message = await navigator.clipboard.writeText(text)
+                .then(() => GLOBAL_CONFIG.lang.copy.success)
+                .catch(() => GLOBAL_CONFIG.lang.copy.error);
+            utils.snackbarShow(message, false, 2000);
+        },
+        getEleTop: ele => {
+            let actualTop = ele.offsetTop;
+            while (ele.offsetParent) {
+                ele = ele.offsetParent;
+                actualTop += ele.offsetTop;
+            }
+            return actualTop;
+        },
+        siblings: (ele, selector) => {
+            return [...ele.parentNode.children].filter((child) => {
+                if (selector) {
+                    return child !== ele && child.matches(selector)
+                }
+                return child !== ele
+            })
+        },
+        randomNum: (length) => {
+            return Math.floor(Math.random() * length)
+        },
+        timeDiff: (timeObj, today) => {
+            const timeDiff = today.getTime() - timeObj.getTime();
+            return Math.floor(timeDiff / (1000 * 3600 * 24));
+        },
+        scrollToDest: (pos, time = 500) => {
+            const currentPos = window.pageYOffset;
+            const isNavFixed = document.getElementById('page-header').classList.contains('nav-fixed');
+            pos = currentPos > pos || isNavFixed ? pos - 70 : pos;
+
+            if ('scrollBehavior' in document.documentElement.style) {
+                window.scrollTo({top: pos, behavior: 'smooth'});
+                return;
+            }
+
+            const distance = pos - currentPos;
+            const step = currentTime => {
+                const start = start || currentTime;
+                const progress = currentTime - start;
+
+                if (progress < time) {
+                    window.scrollTo(0, currentPos + distance * progress / time);
+                    window.requestAnimationFrame(step);
+                } else {
+                    window.scrollTo(0, pos);
+                }
+            };
+
+            window.requestAnimationFrame(step);
+        },
+        isMobile: () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+        isHidden: e => 0 === e.offsetHeight && 0 === e.offsetWidth,
+        addEventListenerPjax: (ele, event, fn, option = false) => {
+            ele.addEventListener(event, fn, option)
+            utils.addGlobalFn('pjax', () => {
+                ele.removeEventListener(event, fn, option)
+            })
+        },
+        animateIn: (ele, text) => {
+            Object.assign(ele.style, {display: 'block', animation: text});
+        },
+        animateOut: (ele, text) => {
+            const resetAnimation = () => {
+                ele.style.display = '';
+                ele.style.animation = '';
+                ele.removeEventListener('animationend', resetAnimation);
+            };
+            ele.addEventListener('animationend', resetAnimation);
+            ele.style.animation = text;
+        },
+        wrap: (selector, eleType, options) => {
+            const createEle = document.createElement(eleType)
+            for (const [key, value] of Object.entries(options)) {
+                createEle.setAttribute(key, value)
+            }
+            selector.parentNode.insertBefore(createEle, selector)
+            createEle.appendChild(selector)
+        },
+        lazyloadImg: () => {
+            window.lazyLoadInstance = new LazyLoad({
+                elements_selector: 'img',
+                threshold: 0,
+                data_src: 'lazy-src',
+                callback_error: img => img.src = GLOBAL_CONFIG.lazyload.error
+            });
+        },
+        lightbox: function (selector) {
+            const lightboxType = GLOBAL_CONFIG.lightbox;
+            const options = {
+                class: 'fancybox',
+                'data-fancybox': 'gallery',
+            };
+
+            if (lightboxType === 'mediumZoom') {
+                mediumZoom && mediumZoom(selector, {background: "var(--efu-card-bg)"});
+            } else if (lightboxType === 'fancybox') {
+                selector.forEach(i => {
+                    if (i.parentNode.tagName !== 'A') {
+                        options.href = options['data-thumb'] = i.dataset.lazySrc || i.src;
+                        options['data-caption'] = i.title || i.alt || '';
+                        utils.wrap(i, 'a', options);
+                    }
+                });
+
+                if (!window.fancyboxRun) {
+                    Fancybox.bind('[data-fancybox]', {
+                        Hash: false,
+                        animated: true,
+                        Thumbs: {showOnStart: false},
+                        Images: {Panzoom: {maxScale: 4}},
+                        Carousel: {transition: 'slide'},
+                        Toolbar: {
+                            display: {
+                                left: ['infobar'],
+                                middle: ['zoomIn', 'zoomOut', 'toggle1to1', 'rotateCCW', 'rotateCW', 'flipX', 'flipY'],
+                                right: ['slideshow', 'thumbs', 'close']
+                            }
+                        },
+                    });
+                    window.fancyboxRun = true;
+                }
+            }
+        },
+        diffDate: (d, more = false) => {
+            const dateNow = new Date();
+            const datePost = new Date(d);
+            const dateDiff = dateNow - datePost;
+            const minute = 60000;
+            const hour = 3600000;
+            const day = 86400000;
+            const month = 2592000000;
+            const {time} = GLOBAL_CONFIG.lang;
+            const dayCount = Math.floor(dateDiff / day)
+            if (!more) return dayCount
+            const minuteCount = Math.floor(dateDiff / minute)
+            const hourCount = Math.floor(dateDiff / hour)
+            const monthCount = Math.floor(dateDiff / month)
+            if (monthCount > 12) return datePost.toISOString().slice(0, 10)
+            if (monthCount >= 1) return `${monthCount} ${time.month}`
+            if (dayCount >= 1) return `${dayCount} ${time.day}`
+            if (hourCount >= 1) return `${hourCount} ${time.hour}`
+            if (minuteCount >= 1) return `${minuteCount} ${time.min}`
+            return time.just
+        },
+        loadComment: (dom, callback) => {
+            const observerItem = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    callback();
+                    observerItem.disconnect();
+                }
+            }, {threshold: [0]}) : null;
+
+            observerItem ? observerItem.observe(dom) : callback();
+        },
     }
-  },
-
-  throttle: function (func, wait, options) {
-    let timeout, context, args
-    let previous = 0
-    if (!options) options = {}
-
-    const later = function () {
-      previous = options.leading === false ? 0 : new Date().getTime()
-      timeout = null
-      func.apply(context, args)
-      if (!timeout) context = args = null
-    }
-
-    const throttled = function () {
-      const now = new Date().getTime()
-      if (!previous && options.leading === false) previous = now
-      const remaining = wait - (now - previous)
-      context = this
-      args = arguments
-      if (remaining <= 0 || remaining > wait) {
-        if (timeout) {
-          clearTimeout(timeout)
-          timeout = null
-        }
-        previous = now
-        func.apply(context, args)
-        if (!timeout) context = args = null
-      } else if (!timeout && options.trailing !== false) {
-        timeout = setTimeout(later, remaining)
-      }
-    }
-
-    return throttled
-  },
-
-  sidebarPaddingR: () => {
-    const innerWidth = window.innerWidth
-    const clientWidth = document.body.clientWidth
-    const paddingRight = innerWidth - clientWidth
-    if (innerWidth !== clientWidth) {
-      document.body.style.paddingRight = paddingRight + 'px'
-    }
-  },
-
-  snackbarShow: (text, showAction = false, duration = 2000) => {
-    const { position, bgLight, bgDark } = GLOBAL_CONFIG.Snackbar
-    const bg = document.documentElement.getAttribute('data-theme') === 'light' ? bgLight : bgDark
-    Snackbar.show({
-      text: text,
-      backgroundColor: bg,
-      showAction: showAction,
-      duration: duration,
-      pos: position,
-      customClass: 'snackbar-css'
-    })
-  },
-
-  diffDate: (d, more = false) => {
-    const dateNow = new Date()
-    const datePost = new Date(d)
-    const dateDiff = dateNow.getTime() - datePost.getTime()
-    const minute = 1000 * 60
-    const hour = minute * 60
-    const day = hour * 24
-    const month = day * 30
-
-    let result
-    if (more) {
-      const monthCount = dateDiff / month
-      const dayCount = dateDiff / day
-      const hourCount = dateDiff / hour
-      const minuteCount = dateDiff / minute
-
-      if (monthCount > 12) {
-        result = datePost.toLocaleDateString().replace(/\//g, '-')
-      } else if (monthCount >= 1) {
-        result = parseInt(monthCount) + ' ' + GLOBAL_CONFIG.date_suffix.month
-      } else if (dayCount >= 1) {
-        result = parseInt(dayCount) + ' ' + GLOBAL_CONFIG.date_suffix.day
-      } else if (hourCount >= 1) {
-        result = parseInt(hourCount) + ' ' + GLOBAL_CONFIG.date_suffix.hour
-      } else if (minuteCount >= 1) {
-        result = parseInt(minuteCount) + ' ' + GLOBAL_CONFIG.date_suffix.min
-      } else {
-        result = GLOBAL_CONFIG.date_suffix.just
-      }
-    } else {
-      result = parseInt(dateDiff / day)
-    }
-    return result
-  },
-
-  loadComment: (dom, callback) => {
-    if ('IntersectionObserver' in window) {
-      const observerItem = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          callback()
-          observerItem.disconnect()
-        }
-      }, { threshold: [0] })
-      observerItem.observe(dom)
-    } else {
-      callback()
-    }
-  },
-
-  scrollToDest: (pos, time = 500) => {
-    const currentPos = window.pageYOffset
-    if (currentPos > pos) pos = pos - 70
-
-    if ('scrollBehavior' in document.documentElement.style) {
-      window.scrollTo({
-        top: pos,
-        behavior: 'smooth'
-      })
-      return
-    }
-
-    let start = null
-    pos = +pos
-    window.requestAnimationFrame(function step (currentTime) {
-      start = !start ? currentTime : start
-      const progress = currentTime - start
-      if (currentPos < pos) {
-        window.scrollTo(0, ((pos - currentPos) * progress / time) + currentPos)
-      } else {
-        window.scrollTo(0, currentPos - ((currentPos - pos) * progress / time))
-      }
-      if (progress < time) {
-        window.requestAnimationFrame(step)
-      } else {
-        window.scrollTo(0, pos)
-      }
-    })
-  },
-
-  animateIn: (ele, text) => {
-    ele.style.display = 'block'
-    ele.style.animation = text
-  },
-
-  animateOut: (ele, text) => {
-    ele.addEventListener('animationend', function f () {
-      ele.style.display = ''
-      ele.style.animation = ''
-      ele.removeEventListener('animationend', f)
-    })
-    ele.style.animation = text
-  },
-
-  getParents: (elem, selector) => {
-    for (; elem && elem !== document; elem = elem.parentNode) {
-      if (elem.matches(selector)) return elem
-    }
-    return null
-  },
-
-  siblings: (ele, selector) => {
-    return [...ele.parentNode.children].filter((child) => {
-      if (selector) {
-        return child !== ele && child.matches(selector)
-      }
-      return child !== ele
-    })
-  },
-
-  /**
-   * @param {*} selector
-   * @param {*} eleType the type of create element
-   * @param {*} options object key: value
-   */
-  wrap: (selector, eleType, options) => {
-    const creatEle = document.createElement(eleType)
-    for (const [key, value] of Object.entries(options)) {
-      creatEle.setAttribute(key, value)
-    }
-    selector.parentNode.insertBefore(creatEle, selector)
-    creatEle.appendChild(selector)
-  },
-
-  unwrap: el => {
-    const elParentNode = el.parentNode
-    if (elParentNode !== document.body) {
-      elParentNode.parentNode.insertBefore(el, elParentNode)
-      elParentNode.parentNode.removeChild(elParentNode)
-    }
-  },
-
-  isHidden: ele => ele.offsetHeight === 0 && ele.offsetWidth === 0,
-
-  getEleTop: ele => {
-    let actualTop = ele.offsetTop
-    let current = ele.offsetParent
-
-    while (current !== null) {
-      actualTop += current.offsetTop
-      current = current.offsetParent
-    }
-
-    return actualTop
-  },
-
-  loadLightbox: ele => {
-    const service = GLOBAL_CONFIG.lightbox
-
-    if (service === 'mediumZoom') {
-      const zoom = mediumZoom(ele)
-      zoom.on('open', e => {
-        const photoBg = document.documentElement.getAttribute('data-theme') === 'dark' ? '#121212' : '#fff'
-        zoom.update({
-          background: photoBg
-        })
-      })
-    }
-
-    if (service === 'fancybox') {
-      ele.forEach(i => {
-        if (i.parentNode.tagName !== 'A') {
-          const dataSrc = i.dataset.lazySrc || i.src
-          const dataCaption = i.title || i.alt || ''
-          btf.wrap(i, 'a', { href: dataSrc, 'data-fancybox': 'gallery', 'data-caption': dataCaption, 'data-thumb': dataSrc })
-        }
-      })
-
-      if (!window.fancyboxRun) {
-        Fancybox.bind('[data-fancybox]', {
-          Hash: false,
-          Thumbs: {
-            autoStart: false
-          }
-        })
-        window.fancyboxRun = true
-      }
-    }
-  },
-
-  initJustifiedGallery: function (selector) {
-    selector.forEach(function (i) {
-      if (!btf.isHidden(i)) {
-        fjGallery(i, {
-          itemSelector: '.fj-gallery-item',
-          rowHeight: 220,
-          gutter: 4,
-          onJustify: function () {
-            this.$container.style.opacity = '1'
-          }
-        })
-      }
-    })
-  },
-
-  updateAnchor: (anchor) => {
-    if (anchor !== window.location.hash) {
-      if (!anchor) anchor = location.pathname
-      const title = GLOBAL_CONFIG_SITE.title
-      window.history.replaceState({
-        url: location.href,
-        title: title
-      }, title, anchor)
-    }
-  }
-}
+    window.utils = {...window.utils, ...utilsFn};
+})()
