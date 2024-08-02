@@ -1,16 +1,6 @@
----
-layout: post
-title: "如何安装wtg（传统wtg版）"
-date:   2024-06-15
-tags:
-    - WinToGo
-    - Windows
-    - 教程
-categories:
-    - WinToGo
-    - Windows
-cover: /img/wtg-blog.png
----
+# 如何安装wtg（传统wtg版）
+## 发布日期: 2024-06-15
+
 # 前提提示
 
 Windows to go已经被微软停止维护了，不过据微软公告自 Windows 10 Version 1903 版开始微软将不再更新此功能，不过当前用户依然可以继续使用。
