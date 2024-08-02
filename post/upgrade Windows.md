@@ -1,15 +1,7 @@
----
-layout: post
-title: "从0教你升级Windows10"
-date:   2024-06-09
-tags:
-    - Windows
-    - 教程
-categories:
-    - Windows
-cover: /img/default_cover_168.webp
----
-## 前提提要：
+# 从0教你升级Windows10
+## 发布日期: 2024-06-09
+
+# 前提提要：
 
 本文章专对不会升级Windows10的小白写的，如果你已经会升级Windows，那么这里就当废话了（
 
