@@ -1,17 +1,9 @@
----
-layout: post
-title: "保姆级教你升级Windows11"
-date:   2024-06-11
-tags:
-    - Windows
-    - 教程
-categories:
-    - Windows
-cover: /img/amls.jpg
----
+# 保姆级教你升级Windows11
+## 发布日期: 2024-06-11
+
 # 前提提要
 
-> 本教程是根据上期升级Windows10教程的延伸，所以在看此教程前，请去[上期](/_posts/2024-06-09-upgrade%20Windows.md)看看
+> 本教程是根据上期升级Windows10教程的延伸，所以在看此教程前，请去[上期](/posts/upgrade%20Windows.md)看看
 >
 > 安装系统时电脑桌面和C盘的文件会全部消失（其它磁盘的文件不受影响），安装系统前请提前备份。
 
