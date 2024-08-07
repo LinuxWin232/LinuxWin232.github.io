@@ -2,3 +2,9 @@
 body {
     font-family: "LXGW WenKai"， sans-serif;
 }
+
+@font-face {
+  font-family: LXGW WenKai;
+  src: url(/styles/LXGWWenKai-Regular.woff2);
+  font-display: swap;
+}
