@@ -43,5 +43,5 @@
 }
 
 body {
-  font-family: 'LXGW WenKai', serif; /* 使用自定义字体，如果未加载则使用serif作为备选 */
+  font-family: "LXGW WenKai", sans-serif;
 }
