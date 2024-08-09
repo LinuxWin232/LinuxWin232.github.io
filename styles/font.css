@@ -1,10 +1,10 @@
 /* 字体相关设置 */
-body {
-    font-family: "LXGW WenKai"， sans-serif;
+@font-face {
+    font-family: "LXGWWeiKai";
+    src: url(./styles/LXGWWenKai-Regular.ttf);
+    font-display: swap;
 }
 
-@font-face {
-  font-family: LXGW WenKai;
-  src: url(/styles/LXGWWenKai-Regular.woff2);
-  font-display: swap;
+body {
+    font-family: "LXGWWeiKai";
 }
